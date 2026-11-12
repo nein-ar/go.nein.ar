@@ -1,0 +1,85 @@
+{{ $widget := .widget }}
+{{ $context := .context }}
+
+{{ $render := false }}
+{{ if eq $widget.type "menu" }}{{ if $context.Site.Menus.main }}{{ $render = true }}{{ end }}{{ end }}
+{{ if eq $widget.type "status" }}{{ if $widget.rows }}{{ $render = true }}{{ end }}{{ end }}
+{{ if eq $widget.type "hero" }}{{ $render = true }}{{ end }}
+{{ if eq $widget.type "buttons" }}{{ if $widget.items }}{{ $render = true }}{{ end }}{{ end }}
+{{ if eq $widget.type "links" }}{{ if $widget.items }}{{ $render = true }}{{ end }}{{ end }}
+{{ if eq $widget.type "flag" }}{{ if $widget.colors }}{{ $render = true }}{{ end }}{{ end }}
+
+{{ if $render }}
+    {{ if eq $widget.type "flag" }}
+         <div class="flex flex-col gap-1 opacity-50 mb-6">
+            {{ $symbol := $widget.symbol }}
+            {{ range $index, $color := $widget.colors }}
+                {{ if eq $index 1 }}
+                    <div class="h-2 flex justify-center items-center" style="background-color: {{ $color }}">
+                        {{ if $symbol }}<span class="text-[6px]">{{ $symbol }}</span>{{ end }}
+                    </div>
+                {{ else }}
+                    <div class="h-2" style="background-color: {{ $color }}"></div>
+                {{ end }}
+            {{ end }}
+        </div>
+    {{ else }}
+        <div class="bunker-window {{ if eq $widget.type "hero" }}text-center{{ end }}" {{ if $widget.title }}id="{{ lower $widget.title | replace " " "-" }}"{{ end }}>
+            {{ if $widget.title }}
+                <div class="window-title">
+                    <span>{{ $widget.title }}</span>
+                    {{ if $widget.title_right }}<span>{{ $widget.title_right }}</span>{{ end }}
+                </div>
+            {{ end }}
+
+            {{ if eq $widget.type "menu" }}
+                {{ if $widget.dynamic }}
+                    {{ $home := $context.Site.Home }}
+                    <a href="{{ $home.RelURL }}" class="nav-link">~/{{ $home.Params.section_name | default "home" | lower }}</a>
+                    {{ range $context.Site.Pages }}
+                        {{ if eq .Kind "section" }}
+                        <a href="{{ .RelURL }}" class="nav-link">~/{{ .Params.section_name | default .Title | lower }}</a>
+                        {{ end }}
+                    {{ end }}
+                {{ else }}
+                    {{ range $context.Site.Menus.main }}
+                        <a href="{{ .URL }}" class="nav-link">~/{{ .Name | lower }}</a>
+                    {{ end }}
+                {{ end }}
+            {{ end }}
+
+            {{ if eq $widget.type "status" }}
+                <div class="text-xs space-y-2">
+                    {{ range $widget.rows }}
+                        <p><strong>{{ .key }}:</strong> {{ .value }}</p>
+                    {{ end }}
+                    {{ if $widget.quote }}
+                        <div class="accent-bar mt-2"></div>
+                        <p class="italic text-[10px]">{{ $widget.quote | safeHTML }}</p>
+                    {{ end }}
+                </div>
+            {{ end }}
+
+            {{ if eq $widget.type "hero" }}
+                <span class="text-4xl">{{ $widget.icon }}</span>
+                <p class="text-[10px] mt-2 font-bold uppercase">{{ $widget.text }}</p>
+            {{ end }}
+
+            {{ if eq $widget.type "buttons" }}
+                <div class="flex flex-wrap justify-center gap-1">
+                    {{ range $widget.items }}
+                        <a href="{{ .url | default "#" }}" class="btn-88x31 {{ .class }}" {{ if .alt }}title="{{ .alt }}"{{ end }}>{{ .name }}</a>
+                    {{ end }}
+                </div>
+            {{ end }}
+
+            {{ if eq $widget.type "links" }}
+                <ul class="text-[10px] space-y-2">
+                    {{ range $widget.items }}
+                        <li>&bull; <a href="{{ .url }}" class="underline">{{ .name }}</a> {{ .note }}</li>
+                    {{ end }}
+                </ul>
+            {{ end }}
+        </div>
+    {{ end }}
+{{ end }}

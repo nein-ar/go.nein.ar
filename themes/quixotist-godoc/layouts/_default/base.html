@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Config.LanguageCode }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ .Page.Title }} // {{ .Site.Title }}</title>
+
+    <link rel="icon" href="{{ absURL "img/favicon.ico" }}" sizes="any">
+    <link rel="icon" href="{{ absURL "img/favicon.png" }}" type="image/png">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="{{ absURL "css/quixotist.css" }}" rel="stylesheet">
+    <link href="{{ absURL "css/SerenityOS-Emoji.css" }}" rel="stylesheet" type="text/css">
+    <link href="{{ absURL "css/highlightjs_style.css" }}" rel="stylesheet" type="text/css">
+    <link href="{{ absURL "css/godoc.css" }}" rel="stylesheet">
+
+    <!-- defer keeps order, and the language packs need the core loaded first -->
+    <script defer src="{{ absURL "js/highlight.min.js" }}"></script>
+    <script defer src="{{ absURL "js/highlight-basic.min.js" }}"></script>
+    <script defer src="{{ absURL "js/highlight-bash.min.js" }}"></script>
+    <script defer src="{{ absURL "js/highlight-go.min.js" }}"></script>
+    <script defer src="{{ absURL "js/highlight-c.min.js" }}"></script>
+    <script defer src="{{ absURL "js/godoc.js" }}"></script>
+
+    <style>
+        header nav, body > nav, footer.no-print { display: none !important; }
+    </style>
+</head>
+<body class="{{ if eq .Page.Kind "home" }}page-home{{ else }}page-single{{ end }} p-4 md:p-8">
+    <div class="scanline"></div>
+    <div class="max-w-6xl mx-auto">
+        {{ .Body }}
+    </div>
+</body>
+</html>

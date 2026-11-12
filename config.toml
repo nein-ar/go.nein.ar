@@ -1,0 +1,42 @@
+title = "GO.NEIN.AR"
+description = "go packages for us, my people"
+base_url = "https://go.nein.ar"
+language_code = "en-us"
+theme = "quixotist-godoc"
+output_dir = "pub"
+cache_dir = ".cache"
+static_dir = "site"
+
+org = "nein-ar"
+clones_dir = ".cache/clones"
+
+[params]
+subtitle = "GO PACKAGES // NEIN-AR"
+avatar = "https://github.com/nein-ar.png"
+description = "go vanity import paths for go.nein.ar"
+vanity_host = "go.nein.ar"
+org = "nein-ar"
+copyright = "all rights reserved to the individual."
+
+window_status = "path"
+home_window_status = "GO.NEIN.AR"
+window_title = "PKG"
+home_window_title = "PKG_INDEX"
+
+[[params.header_tags]]
+text = "GO"
+style = "highlight"
+[[params.header_tags]]
+text = "NEIN-AR"
+style = "default"
+[[params.header_tags]]
+text = "ISC"
+style = "default"
+
+[params.marquee]
+text = "go get go.nein.ar/<pkg> // ISC LICENSED // INDUSTRIA ARGENTINA //"
+
+[[params.widgets.right]]
+type = "flag"
+colors = ["#74ACDF", "#FFFFFF", "#74ACDF"]
+symbol = "☀️"

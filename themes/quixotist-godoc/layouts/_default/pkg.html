@@ -1,0 +1,183 @@
+{{ $p := index .Site.Data.pkgs.by_key .Page.Params.import }}
+{{ with $p }}
+{{ $repo := .repo }}
+<div class="print-main-container">
+  {{ partial "header.html" $ }}
+
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+
+    <div class="md:col-span-3 no-print">
+
+      {{ if .subpkgs }}
+      <div class="bunker-window">
+        <div class="window-title">
+          <span>SUBPACKAGES</span>
+          <span>{{ len .subpkgs }}</span>
+        </div>
+        <nav class="pkg-subs">
+          {{ range .subpkgs }}
+          <a href="{{ href $.Page.Path (printf "/pkg/%s/%s/index.html" $repo .rel) }}" class="nav-link pkg-sub" title="{{ .import_path }}">
+            ~/{{ .rel }}
+            {{ if .synopsis }}<span class="pkg-sub-synopsis">{{ .synopsis }}</span>{{ end }}
+          </a>
+          {{ end }}
+        </nav>
+      </div>
+      {{ end }}
+
+      <div class="bunker-window">
+        <div class="window-title">
+          <span>PKG_INFO</span>
+          <span>_</span>
+        </div>
+        <div class="pkg-info text-xs space-y-2 p-1">
+          <p><strong>PKG:</strong> {{ .name }}</p>
+          {{ if .module }}<p><strong>MOD:</strong> <span class="pkg-wrap">{{ .module }}</span></p>{{ end }}
+          {{ if .github }}<p><strong>SRC:</strong> <a href="{{ .github }}" target="_blank" rel="noopener" class="pkg-wrap underline">{{ trimPrefix .github "https://" }}</a></p>{{ end }}
+          <p><strong>TYPE:</strong>
+            {{ if .is_command }}COMMAND
+            {{ else if .has_exports }}LIBRARY
+            {{ else }}INTERNAL{{ end }}
+          </p>
+          {{ if .subpkgs }}<p><strong>SUBS:</strong> {{ len .subpkgs }}</p>{{ end }}
+          <p><strong>HOST:</strong> {{ $.Site.Params.vanity_host }}</p>
+          <p><strong>VCS:</strong> github.com/{{ $.Site.Params.org }}</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="md:col-span-6 print-full-width">
+
+      <div class="bunker-window">
+        <div class="window-title">
+          <span>
+            PKG
+            {{- if .is_command -}}
+              <span class="pkg-badge pkg-badge-cmd">CMD</span>
+            {{- else if not (.has_exports) -}}
+              <span class="pkg-badge pkg-badge-noexp">NO EXPORTS</span>
+            {{- end }}
+          </span>
+          <span class="pkg-import-path truncate">{{ .import_path }}</span>
+        </div>
+        <div class="p-3">
+          {{ if .synopsis }}
+          <p class="text-xs font-mono opacity-70 mb-3 italic">{{ .synopsis }}</p>
+          {{ end }}
+
+          {{ if .is_command }}
+          <div class="pkg-get-cmd font-mono text-xs" data-copy="go install {{ .import_path }}@latest" title="click to copy">
+            <span class="pkg-get-prefix">$</span> go install <strong>{{ .import_path }}</strong>@latest
+            <span class="pkg-get-copied">copied!</span>
+          </div>
+          {{ else }}
+          <div class="pkg-get-cmd font-mono text-xs" data-copy="go get {{ .import_path }}@latest" title="click to copy">
+            <span class="pkg-get-prefix">$</span> go get <strong>{{ .import_path }}</strong>@latest
+            <span class="pkg-get-copied">copied!</span>
+          </div>
+          {{ end }}
+
+          <div class="flex flex-wrap gap-x-4 gap-y-1 text-[9px] font-mono uppercase mt-3 pt-2 border-t border-black opacity-60">
+            {{ if .github }}
+            <a href="{{ .github }}" target="_blank" rel="noopener" class="underline hover:opacity-100">[github &#8599;]</a>
+            {{ end }}
+            <a href="{{ printf "https://pkg.go.dev/%s" .import_path }}" target="_blank" rel="noopener" class="underline hover:opacity-100">[pkg.go.dev &#8599;]</a>
+            {{ if .module }}<span>mod: {{ .module }}</span>{{ end }}
+            <span>{{ .date }}</span>
+          </div>
+        </div>
+      </div>
+
+      {{ if or (.has_exports) (.is_command) }}
+      <div class="bunker-window print-no-border">
+        <div class="window-title no-print">
+          <span>{{ upper .name }}</span>
+          <span class="text-[9px] opacity-70">~/{{ .import_path }}</span>
+        </div>
+        <div class="godoc-body p-4">
+
+          {{ if .doc }}<div class="godoc-overview">{{ .doc | safeHTML }}</div>{{ end }}
+
+          {{ if .consts }}
+          <section class="godoc-section" id="constants">
+            <h2 class="godoc-section-title"><a href="#constants">Constants</a></h2>
+            {{ range .consts }}
+            <div class="godoc-decl" id="{{ .anchor }}">{{ partial "godoc_body.html" . }}</div>
+            {{ end }}
+          </section>
+          {{ end }}
+
+          {{ if .vars }}
+          <section class="godoc-section" id="variables">
+            <h2 class="godoc-section-title"><a href="#variables">Variables</a></h2>
+            {{ range .vars }}
+            <div class="godoc-decl" id="{{ .anchor }}">{{ partial "godoc_body.html" . }}</div>
+            {{ end }}
+          </section>
+          {{ end }}
+
+          {{ if .funcs }}
+          <section class="godoc-section" id="functions">
+            <h2 class="godoc-section-title"><a href="#functions">Functions</a></h2>
+            {{ range .funcs }}
+            <div class="godoc-decl" id="{{ .anchor }}">
+              <h3 class="godoc-sym-title"><a href="#{{ .anchor }}">func {{ .name }}</a></h3>
+              {{ partial "godoc_body.html" . }}
+            </div>
+            {{ end }}
+          </section>
+          {{ end }}
+
+          {{ if .types }}
+          <section class="godoc-section" id="types">
+            <h2 class="godoc-section-title"><a href="#types">Types</a></h2>
+            {{ range .types }}
+            <div class="godoc-type-block" id="{{ .anchor }}">
+              <h3 class="godoc-sym-title"><a href="#{{ .anchor }}">type {{ .name }}</a></h3>
+              {{ partial "godoc_body.html" . }}
+              {{ range .funcs }}
+              <div class="godoc-decl godoc-constructor" id="{{ .anchor }}">
+                <h4 class="godoc-sym-title godoc-sym-constructor"><a href="#{{ .anchor }}">func {{ .name }}</a></h4>
+                {{ partial "godoc_body.html" . }}
+              </div>
+              {{ end }}
+              {{ range .methods }}
+              <div class="godoc-decl godoc-method" id="{{ .anchor }}">
+                <h4 class="godoc-sym-title godoc-sym-method"><a href="#{{ .anchor }}">func {{ .name }}</a></h4>
+                {{ partial "godoc_body.html" . }}
+              </div>
+              {{ end }}
+            </div>
+            {{ end }}
+          </section>
+          {{ end }}
+
+        </div>
+      </div>
+      {{ end }}
+
+    </div>
+
+    <div class="md:col-span-3 no-print">
+
+      <div class="bunker-window" id="pkg-toc-widget" hidden>
+        <div class="window-title">
+          <span>SYMBOLS</span>
+          <button type="button" id="pkg-toc-filter-btn" class="pkg-toc-filter-btn">[FILTER]</button>
+        </div>
+        <div id="pkg-toc-search-wrap" class="pkg-toc-search-wrap" hidden>
+          <input id="pkg-toc-search" class="pkg-toc-search" type="text" placeholder="filter symbols...">
+        </div>
+        <nav id="pkg-toc" class="pkg-toc"></nav>
+      </div>
+
+      {{ partial "widgets.html" (dict "widgets" $.Site.Params.widgets.right "context" $) }}
+
+    </div>
+
+  </div>
+</div>
+
+{{ partial "footer.html" $ }}
+{{ end }}

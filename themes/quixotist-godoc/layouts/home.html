@@ -1,0 +1,68 @@
+<div class="print-main-container">
+    {{ partial "header.html" $ }}
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div class="md:col-span-3">
+            {{ partial "widgets.html" (dict "widgets" .Site.Params.widgets.left "context" $) }}
+        </div>
+
+        <div class="md:col-span-6">
+            <div class="bunker-window">
+                <div class="window-title">
+                    {{ $winTitle := .Site.Params.home_window_title | default .Site.Params.window_title | default "" }}
+                    {{ if eq (lower $winTitle) "title" }}
+                        <span>{{ upper .Page.Title }}</span>
+                    {{ else }}
+                        <span>{{ upper $winTitle }}</span>
+                    {{ end }}
+
+                    {{ $winStatus := .Site.Params.home_window_status | default .Site.Params.window_status | default "path" }}
+                    {{ if eq (lower $winStatus) "path" }}
+                        <span>{{ .Page.Params.status | default "100% HEALTH" }}</span>
+                    {{ else }}
+                        <span>{{ $winStatus }}</span>
+                    {{ end }}
+                </div>
+                <div class="p-4">
+                    <div class="border-l-4 border-[#ffcc00] pl-4 mb-4">
+                        <h1 class="text-2xl font-bold font-mono uppercase">{{ .Page.Title }}</h1>
+                    </div>
+                    <div class="text-[10px] text-gray-500 font-mono mb-6 uppercase">
+                        {{ .Page.Date.Format "2006-01-02" }} // {{ .Page.Params.section_name | default "home" }}
+                    </div>
+                    <div class="prose font-mono text-sm max-w-none">
+                        {{ .Content }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="bunker-window">
+                <div class="window-title">
+                    <span>PACKAGES</span>
+                    <span>{{ len .Site.Data.repos }}</span>
+                </div>
+                <div class="accent-bar no-print"></div>
+                <div class="mt-4 p-4">
+                    <h3 class="font-bold mb-4 uppercase text-xs tracking-widest bg-gray-100 p-1 inline-block">DIRECTORY LISTING</h3>
+                    <div class="grid grid-cols-1 gap-2">
+                        {{ range .Site.Data.repos }}
+                        <div class="flex items-center justify-between border-b border-gray-100 py-1 hover:bg-yellow-50 px-2 transition-colors">
+                            <a href="{{ href $.Page.Path (printf "/pkg/%s/index.html" .repo) }}" class="text-sm font-bold">/{{ .repo }}</a>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] opacity-50 font-mono text-right">{{ .synopsis }}</span>
+                                <span class="subdomain-tag">DIR</span>
+                            </div>
+                        </div>
+                        {{ end }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="md:col-span-3">
+            {{ partial "widgets.html" (dict "widgets" .Site.Params.widgets.right "context" $) }}
+        </div>
+    </div>
+</div>
+
+{{ partial "footer.html" $ }}

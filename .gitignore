@@ -1,0 +1,4 @@
+pub/
+content/
+data/
+.cache/

@@ -1,0 +1,10 @@
+<footer class="mt-8 no-print">
+    {{ if .Site.Params.marquee.text }}
+    <div class="marquee border-2 border-black">
+        <div class="marquee-content">{{ .Site.Params.marquee.text }} {{ .Site.Params.marquee.text }}</div>
+    </div>
+    {{ end }}
+    <div class="text-[8px] mt-2 text-center uppercase tracking-widest">
+        {{ .Site.Params.copyright | default "All rights reserved to the individual." }}
+    </div>
+</footer>

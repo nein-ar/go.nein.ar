@@ -1,0 +1,4 @@
+{{ $context := .context }}
+{{ range .widgets }}
+    {{ partial "widget.html" (dict "widget" . "context" $context) }}
+{{ end }}
